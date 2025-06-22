@@ -1,0 +1,18 @@
+---
+description: Sets documentation requirements for Python code, including requiring docstrings and following the Google Python Style Guide.
+globs: **/*.py
+alwaysApply: false
+---
+- Require documentation for all code.
+- Use docstrings for documentation.
+- Follow the Google Python Style Guide for documentation.
+
+The docstring(s) should:
+1. Provide a brief description of the function's purpose
+2. List and describe all parameters
+3. Specify the return value(s)
+4. Include any relevant exceptions that may be raised
+5. Offer a simple example of how to use the function
+6. Use markdown formatting for improved readability, including section headers. Do not use ** for section headers. Default to using ### for section headers.
+
+Please format the docstring using triple quotes (""") and ensure it follows PEP 257 convention

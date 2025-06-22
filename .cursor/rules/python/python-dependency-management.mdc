@@ -1,0 +1,9 @@
+---
+description: Defines dependency management practices for Python projects, including using pip and Semantic Versioning.
+globs: pyproject.toml,**/pyproject.toml
+alwaysApply: false
+---
+- Use uv for package management (https://docs.astral.sh/uv/)
+- Use uv for virtual environment management.
+- Use Semantic Versioning for dependency versioning.
+- Use pyproject.toml to store depdencies over solutions like using a requirements.txt or requirements.in file

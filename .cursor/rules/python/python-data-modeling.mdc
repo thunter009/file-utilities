@@ -1,0 +1,6 @@
+---
+description: Promotes modular design within the 'src' directory by organizing code into distinct files for models, services, controllers, and utilities.
+globs: *.py,models.py
+alwaysApply: false
+---
+use Pydantic models instead of dataclasses whenever possible

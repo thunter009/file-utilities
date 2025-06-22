@@ -1,0 +1,143 @@
+---
+description: Markdown formatting guidelines for project documentation
+globs: 
+alwaysApply: true
+---
+
+# Markdown Guidelines
+
+## Document Structure
+
+1. **Frontmatter**
+   - Begin documents with YAML frontmatter enclosed in `---`
+   - Include relevant metadata like description and glob patterns
+   - Keep frontmatter concise and relevant
+
+2. **Headings**
+   - Use ATX-style headings with `#` symbols
+   - Main title should be H1 (`#`)
+   - Major sections should be H2 (`##`)
+   - Subsections should be H3 (`###`)
+   - Leave one blank line before and after headings
+   - Include contextual information in parentheses after section titles where relevant
+   - Use sentence case for headings (capitalize first word and proper nouns)
+
+3. **Content Organization**
+   - Start with a brief overview paragraph after the main title
+   - Organize content hierarchically using appropriate heading levels
+   - Use consistent spacing between sections
+   - Group related information under appropriate headings
+   - Place executive summary or overview sections at the start
+   - End with next steps or future considerations when applicable
+
+## Lists and Bullet Points
+
+1. **List Structure**
+   - Use blank lines between list items for better readability
+   - Indent nested lists consistently (2 spaces)
+   - Keep list items parallel in structure
+   - Start each bullet point with a capital letter
+   - End each bullet point consistently (period for complete sentences, no punctuation for phrases)
+
+2. **List Types**
+   - Use `-` for unordered lists
+   - Use `1.` for ordered lists
+   - Use nested lists for hierarchical information
+   - Group related items under descriptive subheadings
+   - Use consistent list style within each section
+
+3. **List Content**
+   - Keep bullet points concise and focused
+   - Use parallel grammatical structure
+   - Include examples or clarifications in sub-bullets
+   - Maintain consistent formatting across similar lists
+   - Use descriptive lead-ins for complex lists
+
+## Tables
+
+1. **Table Structure**
+   - Use standard markdown table syntax with aligned columns
+   - Include header row with column names
+   - Use separator row with hyphens and pipes
+   - Align column separators vertically for readability
+   - Add blank lines before and after tables
+
+2. **Table Formatting**
+   - Keep column headers concise and clear
+   - Use Title Case for column headers
+   - Maintain consistent column widths within a table
+   - Use bold text for emphasis in headers
+   - Align numeric columns to the right
+   - Align text columns to the left
+
+3. **Table Content**
+   - Use consistent capitalization within columns
+   - Wrap code or technical identifiers in backticks
+   - Keep cell content concise
+   - Use proper punctuation in cell content
+   - Include units where applicable
+   - Use consistent date and number formats
+
+## Text Formatting
+
+1. **Code and Technical Terms**
+   - replace ``` with “““ for writing code blocks.
+   - Use backticks (\`) for inline code, field names, and technical identifiers
+   - Use consistent formatting for similar types of technical terms
+   - Format file paths, API endpoints, and system identifiers in backticks
+   - Use triple backticks for code blocks with language specification
+
+2. **Emphasis and Highlighting**
+   - Use **bold** for emphasis and key terms
+   - Use *italics* for secondary emphasis
+   - Use `code` style for technical terms and values
+   - Maintain consistent emphasis style throughout
+   - Don't overuse emphasis—reserve for important points
+
+3. **Links and References**
+   - Use descriptive link text instead of URLs
+   - Reference other documents using consistent formatting
+   - Include hover text for complex links
+   - Group related links together
+   - Use relative paths for internal documentation
+
+## Diagrams and Visual Elements
+
+1. **Mermaid Diagrams**
+   - Use mermaid.js syntax for diagrams when applicable
+   - Include clear titles and labels
+   - Use consistent styling across diagrams
+   - Add explanatory text before or after diagrams
+   - Configure theme variables for consistent appearance
+
+2. **Custom Styling**
+   - Include CSS in style tags when needed
+   - Use consistent color schemes
+   - Define reusable style classes
+   - Maintain accessibility in custom styles
+   - Document style conventions
+
+## File Organization
+
+1. **Section Ordering**
+   - Start with overview/introduction
+   - Follow with main content sections
+   - Group related sections together
+   - Place detailed reference information later
+   - End with appendices or supplementary information
+
+2. **Consistency**
+   - Maintain consistent formatting throughout
+   - Use similar structure for similar content
+   - Follow established patterns for recurring elements
+   - Keep section depth to a maximum of 4 levels
+   - Use consistent terminology throughout
+
+3. **Document Metadata**
+   - Include version information when applicable
+   - Add last updated date
+   - List related documents
+   - Specify document owner or maintainer
+   - Include change log for major updates
+
+These guidelines ensure documentation remains consistent, readable, and maintainable across the project. Follow these patterns when creating or updating markdown files.
