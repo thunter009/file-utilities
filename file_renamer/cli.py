@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import NoReturn
 
 import click
-import PyPDF2
+from pypdf import PdfReader
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
@@ -221,7 +221,7 @@ def _score_description(description: str) -> int:
     """Score a description for usefulness as a filename.
 
     ### Args:
-        description: The description to score.
+        description: The description to score (can be space or separator-delimited).
 
     ### Returns:
         Score from 0-10, higher is better.
@@ -230,7 +230,10 @@ def _score_description(description: str) -> int:
         return 0
     
     score = 0
-    words = description.split()
+    # Split on spaces, dashes, or underscores to get words
+    import re
+    words = re.split(r'[\s\-_]+', description)
+    words = [w for w in words if w]  # Remove empty strings
     
     # Length scoring
     if 2 <= len(words) <= 6:
@@ -270,7 +273,7 @@ def _extract_pdf_description(file_path: Path, separator: str = "dash") -> str:
     """
     try:
         with open(file_path, 'rb') as f:
-            reader = PyPDF2.PdfReader(f)
+            reader = PdfReader(f)
             
             # Try to get title from metadata first
             if reader.metadata and reader.metadata.title:
@@ -293,7 +296,8 @@ def _extract_pdf_description(file_path: Path, separator: str = "dash") -> str:
                     # Convert ALL CAPS to title case
                     if first_line.isupper():
                         first_line = first_line.title()
-                    return _clean_filename(first_line, separator)[:50]
+                    cleaned = _clean_filename(first_line, separator)
+                    return cleaned[:50]
                     
     except Exception as e:
         logger.warning(f"Could not extract PDF content from {file_path}: {str(e)}")
@@ -302,21 +306,22 @@ def _extract_pdf_description(file_path: Path, separator: str = "dash") -> str:
     return os.path.splitext(file_path.name)[0]
 
 
-def rename_files(directory: Path | str, dry_run: bool = False, separator: str = "dash") -> None:
+def rename_files(directory: Path | str, dry_run: bool = False, separator: str = "dash", include_hidden: bool = False) -> None:
     """Rename files in the directory based on their modification date and contents.
 
     ### Args:
         directory: Path to the directory containing files to rename.
         dry_run: If True, only show what would be renamed without making changes.
         separator: Preferred separator style ("dash" or "underscore").
+        include_hidden: If True, include hidden files (dot files) in processing.
 
     ### Example:
         ```python
-        # Preview changes
+        # Preview changes, skipping hidden files
         rename_files("~/Documents", dry_run=True)
 
-        # Apply changes with dash separators
-        rename_files("~/Documents", separator="dash")
+        # Apply changes including hidden files
+        rename_files("~/Documents", include_hidden=True)
         ```
     """
     directory = Path(directory)
@@ -324,8 +329,16 @@ def rename_files(directory: Path | str, dry_run: bool = False, separator: str = 
         logger.error(f"Directory {directory} does not exist")
         return
 
+    # Track used filenames to prevent collisions
+    used_names = set()
+    
     for file_path in directory.iterdir():
         if file_path.is_file():
+            # Skip hidden files (dot files) unless explicitly included
+            if not include_hidden and file_path.name.startswith('.'):
+                logger.debug(f"Skipping hidden file: {file_path.name}")
+                continue
+                
             try:
                 # Get modification time
                 mod_time = datetime.fromtimestamp(file_path.stat().st_mtime)
@@ -336,7 +349,12 @@ def rename_files(directory: Path | str, dry_run: bool = False, separator: str = 
 
                 # Create new filename
                 extension = file_path.suffix
-                new_name = f"{date_prefix} - {description}{extension}"
+                base_new_name = f"{date_prefix} - {description}{extension}"
+                
+                # Handle filename collisions
+                new_name = _resolve_filename_collision(base_new_name, used_names, file_path.parent)
+                used_names.add(new_name)
+                
                 new_path = file_path.parent / new_name
 
                 if dry_run:
@@ -348,13 +366,55 @@ def rename_files(directory: Path | str, dry_run: bool = False, separator: str = 
                 logger.error(f"Error processing {file_path.name}: {str(e)}")
 
 
+def _resolve_filename_collision(base_name: str, used_names: set, directory: Path) -> str:
+    """Resolve filename collisions by adding a counter suffix.
+
+    ### Args:
+        base_name: The desired filename.
+        used_names: Set of already used filenames in this session.
+        directory: Directory where the file will be placed.
+
+    ### Returns:
+        A unique filename that doesn't conflict with existing or used names.
+    """
+    # Check if base name is already taken (either in used_names or exists on disk)
+    if base_name not in used_names and not (directory / base_name).exists():
+        return base_name
+    
+    # Split filename into name and extension
+    if '.' in base_name:
+        name_part, extension = base_name.rsplit('.', 1)
+        extension = f".{extension}"
+    else:
+        name_part = base_name
+        extension = ""
+    
+    # Try adding counter suffixes until we find a unique name
+    counter = 2
+    while True:
+        candidate_name = f"{name_part}-{counter}{extension}"
+        
+        # Check both our used_names set and actual filesystem
+        if candidate_name not in used_names and not (directory / candidate_name).exists():
+            return candidate_name
+            
+        counter += 1
+        
+        # Safety valve to prevent infinite loop
+        if counter > 1000:
+            import uuid
+            unique_id = str(uuid.uuid4())[:8]
+            return f"{name_part}-{unique_id}{extension}"
+
+
 @click.command()
 @click.argument("directory", type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.option("--dry-run", is_flag=True, help="Show what would be renamed without making changes")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
 @click.option("--separator", default="dash", type=click.Choice(["dash", "underscore"]), 
               help="Preferred separator for filenames (default: dash)")
-def main(directory: str, dry_run: bool, verbose: bool, separator: str) -> NoReturn:
+@click.option("--include-hidden", is_flag=True, help="Include hidden files (dot files) in processing")
+def main(directory: str, dry_run: bool, verbose: bool, separator: str, include_hidden: bool) -> NoReturn:
     """Rename files in DIRECTORY based on their modification date and contents.
 
     ### Args:
@@ -362,12 +422,13 @@ def main(directory: str, dry_run: bool, verbose: bool, separator: str) -> NoRetu
         dry_run: If True, only show what would be renamed without making changes.
         verbose: If True, enable verbose logging.
         separator: Preferred separator style for filenames.
+        include_hidden: If True, include hidden files (dot files) in processing.
     """
     if verbose:
         logger.setLevel(logging.DEBUG)
 
     logger.info(f"Processing directory: {directory}")
-    rename_files(directory, dry_run, separator)
+    rename_files(directory, dry_run, separator, include_hidden)
 
 
 if __name__ == "__main__":

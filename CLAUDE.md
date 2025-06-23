@@ -68,6 +68,8 @@ Files are renamed as: `YYYY-MM-DD - {description}.{extension}`
 
 - `--separator`: Choose separator style (`dash` or `underscore`, default: `dash`)
 
+- `--include-hidden`: Include hidden files (dot files) in processing (default: skip)
+
 ### Testing Structure
 
 - Tests use pytest with fixtures for temporary files
@@ -86,7 +88,7 @@ Files are renamed as: `YYYY-MM-DD - {description}.{extension}`
 
 - python-dotenv: Environment variable handling
 
-- PyPDF2: PDF text extraction for PDF file support
+- pypdf: PDF text extraction for PDF file support
 
 - Development: pytest, pytest-mock, ruff
 
@@ -115,3 +117,5 @@ Files are renamed as: `YYYY-MM-DD - {description}.{extension}`
 - Configurable separator preference: dashes (`Project-Report`) or underscores (`Project_Report`)
 
 - Normalizes all separators to chosen style and removes consecutive separators
+
+- Prevents filename collisions by adding counter suffixes (`-2`, `-3`, etc.) when multiple files would generate the same name

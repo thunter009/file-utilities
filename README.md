@@ -34,6 +34,7 @@ file-renamer /path/to/directory [OPTIONS]
 - `--dry-run`: Show what would be renamed without making changes
 - `--verbose`, `-v`: Enable verbose logging
 - `--separator`: Choose separator style (`dash` or `underscore`, default: `dash`)
+- `--include-hidden`: Include hidden files (dot files) in processing (default: skip)
 
 ### Examples
 
@@ -47,9 +48,14 @@ file-renamer ~/Documents/notes --verbose
 # Use underscore separators instead of dashes
 file-renamer ~/Documents/notes --separator=underscore
 
+# Include hidden files (dot files) in processing
+file-renamer ~/Documents/notes --include-hidden
+
 # Example output:
 # Would rename: untitled.txt -> 2024-01-15 - Project-Analysis-Report.txt
 # Would rename: MEETING_NOTES.md -> 2024-01-15 - Weekly-Team-Meeting.md
+# Would rename: document2.txt -> 2024-01-15 - Project-Analysis-Report-2.txt  # Collision resolved
+# Skipping hidden files like .DS_Store, .gitignore (unless --include-hidden is used)
 ```
 
 ## How It Works
@@ -74,6 +80,11 @@ The tool analyzes file content and applies intelligent rules:
    - Normalizes separators to chosen style (dash/underscore)
    - Removes consecutive separators and cleans special characters
 
+4. **Collision Prevention**:
+   - Automatically detects filename conflicts and adds counter suffixes (`-2`, `-3`, etc.)
+   - Prevents file overwrites when multiple files generate the same name
+   - Checks both existing files and files being renamed in the same session
+
 ### Supported File Types
 
 - **Text Files** (`.txt`, `.md`, `.py`, etc.): Analyzes content for meaningful titles
@@ -85,7 +96,7 @@ This project uses:
 
 - **Python 3.11+**
 - **Click** for CLI interface
-- **PyPDF2** for PDF text extraction
+- **pypdf** for PDF text extraction
 - **uv** for package management
 - **pytest** for testing with comprehensive test coverage
 - **ruff** for linting and formatting
