@@ -44,9 +44,11 @@ This is a Python CLI tool called "file-renamer" that renames files based on thei
 
   - `_score_description()`: Rates description quality (0-10 scale)
 
-  - `rename_files()`: Core renaming logic with dry-run support
+  - `rename_files()`: Core renaming logic for directories with dry-run support
 
-  - `main()`: Click-based CLI entry point
+  - `rename_single_file()`: Single file renaming functionality with collision detection
+
+  - `main()`: Click-based CLI entry point that handles both files and directories
 
 ### File Naming Pattern
 
@@ -60,7 +62,9 @@ Files are renamed as: `YYYY-MM-DD - {description}.{extension}`
 
 ### CLI Usage
 
-- `file-renamer /path/to/directory [OPTIONS]`
+- `file-renamer /path/to/directory [OPTIONS]` - Process all files in a directory
+
+- `file-renamer /path/to/file.txt [OPTIONS]` - Process a single file
 
 - `--dry-run`: Preview changes without applying
 
@@ -68,7 +72,9 @@ Files are renamed as: `YYYY-MM-DD - {description}.{extension}`
 
 - `--separator`: Choose separator style (`dash` or `underscore`, default: `dash`)
 
-- `--include-hidden`: Include hidden files (dot files) in processing (default: skip)
+- `--include-hidden`: Include hidden files (dot files) in processing (default: skip) - directory mode only
+
+- `--force-rename`: Re-process files that are already renamed (have date prefix)
 
 ### Testing Structure
 

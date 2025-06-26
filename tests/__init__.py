@@ -1,1 +1,1 @@
-"""Test package for file-renamer.""" 
+"""Test package for file-renamer."""

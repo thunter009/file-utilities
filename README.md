@@ -26,7 +26,11 @@ A CLI tool to rename files based on their contents and modification dates. Files
 ## Usage
 
 ```bash
+# Rename all files in a directory
 file-renamer /path/to/directory [OPTIONS]
+
+# Rename a single file
+file-renamer /path/to/file.txt [OPTIONS]
 ```
 
 ### Options
@@ -34,15 +38,19 @@ file-renamer /path/to/directory [OPTIONS]
 - `--dry-run`: Show what would be renamed without making changes
 - `--verbose`, `-v`: Enable verbose logging
 - `--separator`: Choose separator style (`dash` or `underscore`, default: `dash`)
-- `--include-hidden`: Include hidden files (dot files) in processing (default: skip)
+- `--include-hidden`: Include hidden files (dot files) in processing (default: skip) - only applies to directories
+- `--force-rename`: Re-process files that are already renamed (have date prefix)
 
 ### Examples
 
 ```bash
-# Preview changes with default dash separators
+# Preview changes for a directory with default dash separators
 file-renamer ~/Documents/notes --dry-run
 
-# Apply changes with verbose logging
+# Rename a single file
+file-renamer ~/Documents/untitled.txt
+
+# Apply changes to directory with verbose logging
 file-renamer ~/Documents/notes --verbose
 
 # Use underscore separators instead of dashes
@@ -51,7 +59,19 @@ file-renamer ~/Documents/notes --separator=underscore
 # Include hidden files (dot files) in processing
 file-renamer ~/Documents/notes --include-hidden
 
-# Example output:
+# Force re-processing of already renamed files
+file-renamer ~/Documents/notes --force-rename
+
+# Single file examples:
+file-renamer document.txt --dry-run
+# Output: Would rename: document.txt -> 2024-01-15 - Project-Analysis-Report.txt
+
+file-renamer ~/Downloads/untitled.pdf
+# Output: Renamed: untitled.pdf -> 2024-01-15 - Research-Paper-Title.pdf
+
+# Directory examples:
+file-renamer ~/Documents/notes --dry-run
+# Output:
 # Would rename: untitled.txt -> 2024-01-15 - Project-Analysis-Report.txt
 # Would rename: MEETING_NOTES.md -> 2024-01-15 - Weekly-Team-Meeting.md
 # Would rename: document2.txt -> 2024-01-15 - Project-Analysis-Report-2.txt  # Collision resolved
@@ -79,6 +99,7 @@ The tool analyzes file content and applies intelligent rules:
    - Converts ALL CAPS to Capital Case
    - Normalizes separators to chosen style (dash/underscore)
    - Removes consecutive separators and cleans special characters
+   - Smart truncation preserves whole words (no more "...Multif.pdf" cut-offs)
 
 4. **Collision Prevention**:
    - Automatically detects filename conflicts and adds counter suffixes (`-2`, `-3`, etc.)
